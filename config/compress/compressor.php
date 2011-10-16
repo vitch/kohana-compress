@@ -17,6 +17,7 @@ return array
 	(
 		'url'				=> 'http://closure-compiler.appspot.com/compile',
 		'compilation_level'	=> 'SIMPLE_OPTIMIZATIONS',
+		'post_method'		=> 'code_url', // or js_code if you want to post the code itself rather than URLs to it
 	),
 	'cssmin'				=> array
 	(
