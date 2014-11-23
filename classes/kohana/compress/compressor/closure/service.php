@@ -20,22 +20,31 @@ abstract class Kohana_Compress_Compressor_Closure_Service extends Compress_Compr
 		if ($args['type'] == 'css')
 			throw new Compress_Exception("Closure Compiler does not support stylesheets.");
 
-		for ($i = 0; $i < count($files); $i++)
-		{
-			// If HTTP(S) wasn't included, it was a local file
-			if (strpos($files[$i], 'http://') !== 0 AND strpos($files[$i], 'https://') !== 0)
-			{
-				$files[$i] = URL::base(TRUE, TRUE).'/'.$files[$i];
-			}
-		}
-
 		// HTTP query
 		$post = array(
-			'code_url'			=> $files,
 			'compilation_level'	=> $this->_config['compilation_level'],
 			'output_format'		=> 'text',
 			'output_info'		=> 'compiled_code',
 		);
+
+		if ($this->_config['post_method'] == 'js_code') {
+			$js_code = '';
+			foreach($files as $file)
+			{
+				$js_code .= file_get_contents($file) . ';';
+			}
+			$post['js_code'] = $js_code;
+		} else {
+			for ($i = 0; $i < count($files); $i++)
+			{
+				// If HTTP(S) wasn't included, it was a local file
+				if (strpos($files[$i], 'http://') !== 0 AND strpos($files[$i], 'https://') !== 0)
+				{
+					$files[$i] = URL::base(TRUE, TRUE).'/'.$files[$i];
+				}
+			}
+			$post['code_url'] = $files;
+		}
 		
 		// Play nice with http
 		$post = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($post));
